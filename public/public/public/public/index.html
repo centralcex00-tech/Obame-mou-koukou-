@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#07152f">
+  <title>OBAME MOUÉKOUKOU</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/style.css">
+
+  <style>
+    body {
+      margin: 0;
+      background: #07152f;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      text-align: center;
+      padding: 30px 15px;
+    }
+
+    header h1 {
+      color: #65caff;
+      letter-spacing: 2px;
+    }
+
+    .universe-button {
+      display: block;
+      width: fit-content;
+      margin: 20px auto;
+      padding: 15px 24px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #087cff, #742cff);
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .assistant {
+      max-width: 650px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+
+    .avatar {
+      width: 130px;
+      height: 130px;
+      margin: 20px auto;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #087cff, #8b42ff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 65px;
+      box-shadow: 0 0 30px #168bff;
+    }
+
+    #messages {
+      height: 300px;
+      overflow-y: auto;
+      background: #102447;
+      border-radius: 15px;
+      padding: 15px;
+    }
+
+    .message {
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 12px;
+      background: #1b3967;
+      overflow-wrap: anywhere;
+    }
+
+    .user {
+      background: #174d83;
+    }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    input {
+      flex: 1;
+      min-width: 0;
+      padding: 14px;
+      border: 0;
+      border-radius: 10px;
+    }
+
+    button {
+      padding: 13px;
+      border: 0;
+      border-radius: 10px;
+      background: #168bff;
+      color: white;
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #9bb5d8;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>OBAME MOUÉKOUKOU</h1>
+  <p>L'union des intelligences artificielles pour repousser les limites du possible.</p>
+</header>
+
+<a href="/universe.html" class="universe-button">
+  🌌 DÉCOUVRIR OBAME UNIVERSE
+</a>
+
+<main class="assistant">
+
+  <div class="avatar" id="avatar">🤖</div>
+
+  <h2 style="text-align:center">Ton assistant intelligent</h2>
+
+  <div id="messages">
+    <div class="message">
+      Bienvenue dans OBAME MOUÉKOUKOU ! Comment puis-je t'aider ?
+    </div>
+  </div>
+
+  <div class="controls">
+    <input id="question" type="text" placeholder="Écris ton message...">
+    <button onclick="sendMessage()">Envoyer</button>
+  </div>
+
+  <div class="controls">
+    <button onclick="startVoice()">🎙️ Parler</button>
+    <button onclick="stopVoice()">🔇 Arrêter</button>
+  </div>
+
+</main>
+
+<footer>
+  OBAME MOUÉKOUKOU © 2026
+</footer>
+
+<script src="/app.js"></script>
+
+<script>
+const messages = document.getElementById("messages");
+const question = document.getElementById("question");
+
+function addMessage(text, type) {
+  const div = document.createElement("div");
+  div.className = "message " + type;
+  div.textContent = text;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+async function sendMessage() {
+  const text = question.value.trim();
+
+  if (!text) return;
+
+  addMessage(text, "user");
+  question.value = "";
+
+  addMessage("OBAME réfléchit...", "assistant");
+
+  const loading = messages.lastElementChild;
+
+  try {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({message: text})
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Erreur du serveur");
+    }
+
+    loading.textContent = data.reply || "Aucune réponse reçue.";
+
+  } catch (error) {
+    loading.textContent = "Impossible de contacter le serveur. Vérifie la configuration.";
+  }
+}
+
+question.addEventListener("keydown", function(event) {
+  if (event.key === "Enter") sendMessage();
+});
+
+function startVoice() {
+  if (window.OBAME_AI && window.OBAME_AI.listen) {
+    window.OBAME_AI.listen(function(text) {
+      question.value = text;
+      sendMessage();
+    });
+  } else {
+    alert("La reconnaissance vocale n'est pas disponible.");
+  }
+}
+
+function stopVoice() {
+  if ("speechSynthesis" in window) {
+    speechSynthesis.cancel();
+  }
+}
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js").catch(() => {});
+}
+</script>
+
+</body>
+</html>
