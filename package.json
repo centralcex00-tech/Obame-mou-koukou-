@@ -1,0 +1,16 @@
+{
+  "name": "obame-mouekoukou",
+  "version": "1.0.0",
+  "description": "OBAME MOUÉKOUKOU - Union des intelligences artificielles",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "openai": "^4.77.0"
+  }
+}
