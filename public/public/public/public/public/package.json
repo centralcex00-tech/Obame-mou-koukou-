@@ -1,0 +1,14 @@
+{
+  "name": "obame-mouekoukou",
+  "version": "0.5.0",
+  "description": "OBAME MOUÉKOUKOU - L'union des intelligences artificielles",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js",
+    "test": "node system-test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
