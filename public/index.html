@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>OBAME MOUÉKOUKOU</title>
+
+  <meta name="theme-color" content="#071426">
+
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+<header>
+  <h1>OBAME MOUÉKOUKOU</h1>
+  <p>L'union des intelligences artificielles</p>
+</header>
+
+<main>
+
+  <section class="welcome">
+    <h2>Bienvenue !</h2>
+    <p>Une nouvelle génération d'intelligence artificielle.</p>
+    <p>Pose tes questions et commence une conversation.</p>
+  </section>
+
+  <section class="chat">
+
+    <div id="messages">
+      <div class="message ai">
+        Bonjour ! Je suis OBAME MOUÉKOUKOU.
+        Comment puis-je t'aider ?
+      </div>
+    </div>
+
+    <div class="input-area">
+
+      <input
+        id="message"
+        type="text"
+        placeholder="Écris ton message..."
+      >
+
+      <button id="send" onclick="sendMessage()">
+        Envoyer
+      </button>
+
+      <button onclick="listenMessage()">
+        🎙️
+      </button>
+
+      <button onclick="speakLast()">
+        🔊
+      </button>
+
+    </div>
+
+  </section>
+
+</main>
+
+<footer>
+  OBAME MOUÉKOUKOU © 2026
+</footer>
+
+<script src="/app.js"></script>
+
+<script>
+  let lastReply = "";
+
+  function addMessage(text, type) {
+    const div = document.createElement("div");
+    div.className = "message " + type;
+    div.textContent = text;
+
+    document.getElementById("messages").appendChild(div);
+  }
+
+  async function sendMessage() {
+    const input = document.getElementById("message");
+    const message = input.value.trim();
+
+    if (!message) return;
+
+    addMessage(message, "user");
+    input.value = "";
+
+    const button = document.getElementById("send");
+    button.disabled = true;
+
+    try {
+      const reply = await OBAME_AI.chat(message);
+
+      lastReply = reply;
+      addMessage(reply, "ai");
+
+    } catch (error) {
+      addMessage("Une erreur est survenue.", "ai");
+    }
+
+    button.disabled = false;
+  }
+
+  function listenMessage() {
+    OBAME_AI.listen((text) => {
+      document.getElementById("message").value = text;
+    });
+  }
+
+  function speakLast() {
+    if (lastReply) {
+      OBAME_AI.speak(lastReply);
+    }
+  }
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/sw.js");
+  }
+
+  document.getElementById("message").addEventListener(
+    "keydown",
+    (event) => {
+      if (event.key === "Enter") sendMessage();
+    }
+  );
+</script>
+
+</body>
+</html>
