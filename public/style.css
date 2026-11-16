@@ -1,0 +1,41 @@
+body {
+  background: #071426;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+header {
+  background: linear-gradient(135deg, #102b4c, #075985);
+  padding: 25px;
+  text-align: center;
+}
+
+button {
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  transform: scale(1.04);
+  filter: brightness(1.2);
+}
+
+input:focus {
+  outline: 2px solid #64c8ff;
+}
+
+.message {
+  animation: appear 0.3s ease;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
