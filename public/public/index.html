@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#071426">
+
+<title>OBAME MOUÉKOUKOU</title>
+
+<link rel="manifest" href="/manifest.json">
+<link rel="stylesheet" href="/style.css">
+
+<style>
+body {
+  margin: 0;
+  background: #071426;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+header {
+  background: #102b4c;
+  text-align: center;
+  padding: 20px;
+}
+
+header h1 {
+  color: #64c8ff;
+}
+
+main {
+  max-width: 750px;
+  margin: auto;
+  padding: 15px;
+}
+
+.avatar-container {
+  text-align: center;
+  padding: 25px;
+  background: #10243b;
+  border-radius: 20px;
+  margin-bottom: 20px;
+}
+
+.avatar-head {
+  width: 145px;
+  height: 170px;
+  margin: auto;
+  border-radius: 48% 48% 43% 43%;
+  background: linear-gradient(145deg, #e6b18a, #a96848);
+  position: relative;
+  box-shadow: 0 0 35px #168bd0;
+  animation: float 3s infinite ease-in-out;
+}
+
+.avatar-eyes {
+  position: absolute;
+  top: 65px;
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.avatar-eyes span {
+  width: 15px;
+  height: 9px;
+  background: #172536;
+  border-radius: 50%;
+  animation: blink 4s infinite;
+}
+
+.avatar-mouth {
+  position: absolute;
+  width: 28px;
+  height: 7px;
+  background: #793e3e;
+  border-radius: 50%;
+  bottom: 35px;
+  left: 58px;
+}
+
+#ai-avatar.talking .avatar-mouth {
+  animation: talk 0.25s infinite alternate;
+}
+
+@keyframes talk {
+  from { height: 5px; }
+  to { height: 24px; border-radius: 40%; }
+}
+
+@keyframes blink {
+  0%, 45%, 50%, 100% { transform: scaleY(1); }
+  47% { transform: scaleY(0.1); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+#avatar-status {
+  color: #64c8ff;
+}
+
+.chat {
+  background: #10243b;
+  border-radius: 15px;
+  padding: 15px;
+}
+
+#messages {
+  height: 300px;
+  overflow-y: auto;
+}
+
+.message {
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 10px;
+  overflow-wrap: anywhere;
+}
+
+.user {
+  background: #15558a;
+  margin-left: 25px;
+}
+
+.ai {
+  background: #1b354d;
+  margin-right: 25px;
+}
+
+.input-area {
+  display: flex;
+  gap: 7px;
+  margin-top: 15px;
+}
+
+input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px;
+  border-radius: 10px;
+  background: #071426;
+  border: 1px solid #42617e;
+  color: white;
+}
+
+button {
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #168bd0;
+  color: white;
+  cursor: pointer;
+}
+
+footer {
+  text-align: center;
+  padding: 20px;
+  color: #829bb2;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>OBAME MOUÉKOUKOU</h1>
+  <p>L'union des intelligences artificielles</p>
+</header>
+
+<main>
+
+<section class="avatar-container">
+
+  <div id="ai-avatar">
+    <div class="avatar-head">
+      <div class="avatar-eyes">
+        <span></span>
+        <span></span>
+      </div>
+      <div class="avatar-mouth"></div>
+    </div>
+  </div>
+
+  <h2>OBAME AI</h2>
+  <p id="avatar-status">Je suis prêt à te parler.</p>
+
+  <button onclick="listenMessage()">🎙️ Parler</button>
+  <button onclick="speakLast()">🔊 Écouter</button>
+
+</section>
+
+<section class="chat">
+
+  <div id="messages">
+    <div class="message ai">
+      Bonjour ! Je suis OBAME MOUÉKOUKOU.
+      Comment puis-je t'aider ?
+    </div>
+  </div>
+
+  <div class="input-area">
+
+    <input
+      id="message"
+      type="text"
+      placeholder="Écris ton message..."
+    >
+
+    <button id="send" onclick="sendMessage()">
+      Envoyer
+    </button>
+
+  </div>
+
+</section>
+
+</main>
+
+<footer>
+  OBAME MOUÉKOUKOU © 2026
+</footer>
+
+<script src="/app.js"></script>
+
+<script>
+let lastReply = "";
+
+function addMessage(text, type) {
+  const div = document.createElement("div");
+  div.className = "message " + type;
+  div.textContent = text;
+
+  document.getElementById("messages").appendChild(div);
+  document.getElementById("messages").scrollTop =
+    document.getElementById("messages").scrollHeight;
+}
+
+function animateAvatar(talking) {
+  document.getElementById("ai-avatar").classList.toggle("talking", talking);
+
+  document.getElementById("avatar-status").textContent =
+    talking ? "Je suis en train de parler..." : "Je suis à ton écoute.";
+}
+
+async function sendMessage() {
+  const input = document.getElementById("message");
+  const message = input.value.trim();
+
+  if (!message) return;
+
+  addMessage(message, "user");
+  input.value = "";
+
+  const button = document.getElementById("send");
+  button.disabled = true;
+
+  try {
+    const reply = await OBAME_AI.chat(message);
+
+    lastReply = reply;
+    addMessage(reply, "ai");
+    speakLast();
+
+  } catch (error) {
+    addMessage("Impossible de contacter le serveur. Vérifie la configuration.", "ai");
+  }
+
+  button.disabled = false;
+}
+
+function speakLast() {
+  if (!lastReply || !("speechSynthesis" in window)) return;
+
+  speechSynthesis.cancel();
+
+  const speech = new SpeechSynthesisUtterance(lastReply);
+  speech.lang = "fr-FR";
+
+  speech.onstart = () => animateAvatar(true);
+  speech.onend = () => animateAvatar(false);
+  speech.onerror = () => animateAvatar(false);
+
+  speechSynthesis.speak(speech);
+}
+
+function listenMessage() {
+  OBAME_AI.listen((text) => {
+    document.getElementById("message").value = text;
+    sendMessage();
+  });
+}
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js");
+}
+
+document.getElementById("message").addEventListener(
+  "keydown",
+  event => {
+    if (event.key === "Enter") sendMessage();
+  }
+);
+</script>
+
+</body>
+  </html>
